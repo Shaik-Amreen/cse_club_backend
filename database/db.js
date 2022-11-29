@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-mongoose.connect("mongodb://127.0.0.1:27017/cseclub",
+mongoose.connect("mongodb+srv://placement:placement@cluster0.i5cpa.mongodb.net/cse_web_club?retryWrites=true&w=majority",
     {
         useNewUrlParser: true, useUnifiedTopology: true, autoIndex: true
     }).then((result) => {
