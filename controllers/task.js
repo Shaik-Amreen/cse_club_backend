@@ -94,12 +94,13 @@ findAllTask = async (req, res) => {
                         await res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
                     }
                 }
-                else if (count == response.task.length) {
-                    await res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
-                }
                 else {
                     count = count + 1;
                 }
+                if (count == response.task.length) {
+                    await res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
+                }
+
             });
         }
     }
