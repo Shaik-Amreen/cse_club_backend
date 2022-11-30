@@ -53,48 +53,54 @@ findAllTask = async (req, res) => {
 
     if (response.task.length > 0) {
         if (condition.role == 'admin') {
-            let submissionCount = await submission.countDocuments()
-            if (submissionCount > 0) {
-                response.submission = true
-                for (let i = 0; i < response.task.length; i++) {
-                    submission.countDocuments({ taskId: response.task[i]._id }, (err, docs) => {
-                        response.task[i].submissionCount = docs
-                        if (i == response.task.length - 1) {
-                            return res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
-                        }
-                    })
-                }
+            let submissions = await submission.find()
+            if (submissions.length > 0) {
+                response.submission = true;
+                let count = 0
+                response.task.forEach(async (e, i) => {
+                    let filterSubmission = await submissions.filter(s => s.taskId == response.task[i]._id)
+                    response.task[i].submissionCount = filterSubmission.length
+                    count = count + 1
+                    if (count == response.task.length) {
+                        await res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
+                    }
+                });
             }
+
             else {
                 return res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
             }
         }
         else if (condition.role == 'student') {
-
-            let submissionCountStudent = await submission.countDocuments({ rollnumber: condition.rollnumber })
+            // task[i].submissionCount = false; if there are no submissions for particular task
+            // task[i].submissionCount = submittedOn; if there are submissions for particular task
+            let studentSubmission = await submission.find({ rollnumber: condition.rollnumber })
             response.submission = true;
-
-            for (let i = 0; i < response.task.length; i++) {
-                response.task[i].submissionCount = false;
+            let count = 0
+            response.task.forEach(async (e, i) => {
                 (new Date() < new Date(response.task[i].deadline)) ? response.task[i].allow = true : response.task[i].allow = false;
-                if (submissionCountStudent > 0) {
-                    submission.findOne({ taskId: response.task[i]._id, rollnumber: condition.rollnumber }, (err, docs) => {
-                        if (docs) {
-                            let submissionStatus = docs.submittedOn
-                            if (submissionStatus) { response.task[i].submissionCount = submissionStatus }
-                        }
-                        if (i == response.task.length - 1) {
-                            res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
-                        }
-                    }).select({ submittedOn: 1 });
+                if (studentSubmission.length > 0) {
+                    let filterSubmission = await studentSubmission.filter(s => s.taskId == response.task[i]._id)
+                    if (filterSubmission.length > 0) {
+                        count = count + 1;
+                        response.task[i].submissionCount = filterSubmission[0].submittedOn
+                    }
+                    else {
+                        count = count + 1;
+                        response.task[i].submissionCount = false;
+                    }
 
+                    if (count == response.task.length) {
+                        await res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
+                    }
+                }
+                else if (count == response.task.length) {
+                    await res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
                 }
                 else {
-                    return res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
+                    count = count + 1;
                 }
-
-            }
-
+            });
         }
     }
     else {

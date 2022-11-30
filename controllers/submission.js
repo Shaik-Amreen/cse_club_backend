@@ -7,6 +7,7 @@ createSubmission = (req, res) => {
     req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
     const { condition, responseDetails } = req.body
     submission.create(condition, (err, docs) => {
+        console.log(err,docs)
         if (!err) {
             return res.status(200).send({ data: btoa((encodeURIComponent(JSON.stringify({ message: "success" })))) });
         }
@@ -17,7 +18,7 @@ createSubmission = (req, res) => {
 }
 
 createSubmissions = (req, res) => {
-
+    
 }
 
 findSubmission = (req, res) => {
@@ -67,7 +68,9 @@ findSubmissions = (req, res) => {
 updateSubmission = (req, res) => {
     req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
     const { condition, responseDetails } = req.body
+    console.log(req.body)
     submission.updateOne(condition, { $set: responseDetails }, (err, docs) => {
+        console.log(err, docs)
         return res.status(200).send({ data: btoa((encodeURIComponent(JSON.stringify({ message: "success" })))) });
     })
 }
