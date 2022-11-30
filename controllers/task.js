@@ -26,14 +26,17 @@ findTask = async (req, res) => {
     response.submission = await submission.find(condition).lean()
     if (response.submission.length > 0) {
         if (role != 'student') {
-            for (let i = 0; i < response.submission.length; i++) {
-                studentData.findOne({ rollnumber: response.submission[i].rollnumber }, (err, docs) => {
-                    response.submission[i].moreDetails = docs
-                    if (i == response.submission.length - 1) {
-                        return res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
-                    }
-                })
-            }
+            let count = 0;
+            var finalResponse = []
+            let students = await studentData.find().lean();
+            response.submission.forEach(async (e, i) => {
+                let filterStudent = await students.filter(s => s.rollnumber == e.rollnumber)
+                finalResponse = [...finalResponse, { ...e, ...{ moreDetails: filterStudent[0] } }]
+                count = count + 1;
+                if (count == response.submission.length) {
+                    return res.send({ data: btoa((encodeURIComponent(JSON.stringify({ task: response.task, submission: finalResponse })))) });
+                }
+            });
         }
         else {
             response.submission = response.submission[0]
@@ -66,7 +69,6 @@ findAllTask = async (req, res) => {
                     }
                 });
             }
-
             else {
                 return res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
             }
@@ -78,11 +80,12 @@ findAllTask = async (req, res) => {
             response.submission = true;
             let count = 0
             response.task.forEach(async (e, i) => {
-                (new Date() < new Date(response.task[i].deadline)) ? response.task[i].allow = true : response.task[i].allow = false;
+                await (new Date() < new Date(response.task[i].deadline)) ? response.task[i].allow = true : response.task[i].allow = false;
                 if (studentSubmission.length > 0) {
                     let filterSubmission = await studentSubmission.filter(s => s.taskId == response.task[i]._id)
                     if (filterSubmission.length > 0) {
                         count = count + 1;
+                        response.task[i].rating = filterSubmission[0].rating
                         response.task[i].submissionCount = filterSubmission[0].submittedOn
                     }
                     else {
@@ -96,10 +99,11 @@ findAllTask = async (req, res) => {
                 }
                 else {
                     count = count + 1;
+                    if (count == response.task.length) {
+                        await res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
+                    }
                 }
-                if (count == response.task.length) {
-                    await res.send({ data: btoa((encodeURIComponent(JSON.stringify(response)))) });
-                }
+
 
             });
         }
