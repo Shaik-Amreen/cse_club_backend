@@ -114,8 +114,30 @@ findAllTask = async (req, res) => {
 }
 
 updateTask = (req, res) => {
-    task.updateOne({ taskId: req.body.taskId }, { $set: req.body }, (err1, docs1) => {
-        res.send({ message: 'success', user: req.body.mail, token: tokenHashed })
+    req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
+    const { condition, responseDetails } = req.body
+    task.updateOne(condition, { $set: responseDetails }, (err, docs) => {
+        if (!err) {
+            return res.send({ data: btoa((encodeURIComponent(JSON.stringify({ message: "success" })))) });
+        }
+        else {
+            return res.send({ data: btoa((encodeURIComponent(JSON.stringify({ message: "error" })))) });
+        }
     })
 }
-module.exports = { postTask, findTask, findAllTask, updateTask } 
+
+findTaskToEdit = (req, res) => {
+    req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
+    const { condition, responseDetails } = req.body
+    task.findOne(condition, (err, docs) => {
+        if (!err) {
+            return res.send({ data: btoa((encodeURIComponent(JSON.stringify(docs)))) });
+        }
+        else {
+            return res.send({ data: btoa((encodeURIComponent(JSON.stringify({ message: "error" })))) });
+        }
+    })
+}
+
+
+module.exports = { postTask, findTask, findAllTask, updateTask, findTaskToEdit } 
