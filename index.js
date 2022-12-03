@@ -29,13 +29,15 @@ app.use(function (req, res, next) {
     next()
 })
 
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'))
+})
+
+
 app.use("/", users)
 app.use("/task", task)
 app.use("/submission", submission)
 
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public/index.html'))
-})
 
 
 
