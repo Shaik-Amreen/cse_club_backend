@@ -5,6 +5,8 @@ const jwt = require("jsonwebtoken")
 const JWTSECRET = "csewebclub"
 const studentData = require('./studentData')
 const randomstring = require('randomstring')
+const atob = require('atob')
+const btoa = require('btoa')
 
 
 const encodeBuffer = (buffer) => buffer.toString("base64")

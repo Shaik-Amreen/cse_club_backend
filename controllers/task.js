@@ -1,6 +1,9 @@
 const task = require("../models/task")
 const submission = require("../models/submission")
 const studentData = require("../models/studentData")
+const atob = require('atob')
+const btoa = require('btoa')
+
 postTask = async (req, res) => {
     req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
     const { condition, responseDetails } = req.body

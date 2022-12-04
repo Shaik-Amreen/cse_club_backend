@@ -1,7 +1,8 @@
 const task = require("../models/task")
 const submission = require("../models/submission")
 const studentData = require("../models/studentData")
-
+const atob = require('atob')
+const btoa = require('btoa')
 
 createSubmission = (req, res) => {
     req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
