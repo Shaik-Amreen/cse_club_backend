@@ -12,7 +12,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use(express.json({ limit: "10000mb", extended: true }))
 app.use(cookieParser())
 const corsOptions = {
-    origin: 'https://club-task.onrender.com/',
+    origin: 'https://club-task.onrender.com',
     credentials: true,            //access-control-allow-credentials:true
     optionSuccessStatus: 200
 }
