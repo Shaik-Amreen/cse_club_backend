@@ -2,9 +2,11 @@ const task = require("../models/task")
 const submission = require("../models/submission")
 const studentData = require("../models/studentData")
 postTask = async (req, res) => {
+    console.log(req.body);
     req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
     const { condition, responseDetails } = req.body
     task.create(condition, (err, docs) => {
+        console.log(req.body);
         if (!err) {
             return res.send({ data: btoa((encodeURIComponent(JSON.stringify({ message: "success" })))) });
         }
@@ -15,6 +17,7 @@ postTask = async (req, res) => {
 }
 
 findTask = async (req, res) => {
+    console.log(req.body);
     req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
     let { condition, responseDetails } = req.body
     const { role, rollnumber, _id } = condition;
@@ -30,6 +33,7 @@ findTask = async (req, res) => {
             var finalResponse = []
             let students = await studentData.find().lean();
             response.submission.forEach(async (e, i) => {
+                console.log(req.body);
                 let filterStudent = await students.filter(s => s.rollnumber == e.rollnumber)
                 finalResponse = [...finalResponse, { ...e, ...{ moreDetails: filterStudent[0] } }]
                 count = count + 1;
@@ -49,6 +53,7 @@ findTask = async (req, res) => {
 }
 
 findAllTask = async (req, res) => {
+    console.log(req.body);
     req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
     const { condition, responseDetails } = req.body
     let response = { submission: false }
@@ -61,6 +66,7 @@ findAllTask = async (req, res) => {
                 response.submission = true;
                 let count = 0
                 response.task.forEach(async (e, i) => {
+                    console.log(req.body);
                     let filterSubmission = await submissions.filter(s => s.taskId == response.task[i]._id)
                     response.task[i].submissionCount = filterSubmission.length
                     count = count + 1
@@ -80,6 +86,7 @@ findAllTask = async (req, res) => {
             response.submission = true;
             let count = 0
             response.task.forEach(async (e, i) => {
+                console.log(req.body);
                 await (new Date() < new Date(response.task[i].deadline)) ? response.task[i].allow = true : response.task[i].allow = false;
                 if (studentSubmission.length > 0) {
                     let filterSubmission = await studentSubmission.filter(s => s.taskId == response.task[i]._id)
@@ -114,9 +121,11 @@ findAllTask = async (req, res) => {
 }
 
 updateTask = (req, res) => {
+    console.log(req.body);
     req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
     const { condition, responseDetails } = req.body
     task.updateOne(condition, { $set: responseDetails }, (err, docs) => {
+        console.log(req.body);
         if (!err) {
             return res.send({ data: btoa((encodeURIComponent(JSON.stringify({ message: "success" })))) });
         }
@@ -127,9 +136,11 @@ updateTask = (req, res) => {
 }
 
 findTaskToEdit = (req, res) => {
+    console.log(req.body);
     req.body = JSON.parse(decodeURIComponent(atob(req.body.data)))
     const { condition, responseDetails } = req.body
     task.findOne(condition, (err, docs) => {
+        console.log(req.body);
         if (!err) {
             return res.send({ data: btoa((encodeURIComponent(JSON.stringify(docs)))) });
         }
