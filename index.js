@@ -14,7 +14,7 @@ app.use(cookieParser())
 
 app.use(cors());
 
-// app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(function (req, res, next) {
     res.setHeader("Content-Security-Policy", "frame-ancestors 'self';");
@@ -30,9 +30,9 @@ app.use(function (req, res, next) {
     next()
 })
 
-// app.get('*', (req, res) => {
-//     res.sendFile(path.join(__dirname, 'public/index.html'))
-// })
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/index.html'))
+})
 
 
 app.use("/", users)
