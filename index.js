@@ -11,7 +11,12 @@ const submission = require('./routers/submission')
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json({ limit: "10000mb", extended: true }))
 app.use(cookieParser())
-app.use(cors())
+const corsOptions = {
+    origin: 'https://cse-club-backend.onrender.com',
+    credentials: true,            //access-control-allow-credentials:true
+    optionSuccessStatus: 200
+}
+app.use(cors(corsOptions));
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.use(function (req, res, next) {
