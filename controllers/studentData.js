@@ -11,7 +11,10 @@ createStudents = (req, res) => {
 }
 
 findStudent = (req, res) => {
-
+    console.log(req.body)
+    studentData.findOne(req.body,{_id:0,__v:0}, (error, studentDetails) => {
+      studentData ? res.send(studentDetails) : res.send("error");
+    });
 }
 
 findStudents = (req, res) => {
